@@ -2,7 +2,7 @@
 FROM elixir:1.12.2-alpine AS build
 
 # Set environment variables
-ENV MIX_ENV=prod
+ENV MIX_ENV=dev
 
 # Install Hex + Rebar
 RUN mix local.hex --force && \
