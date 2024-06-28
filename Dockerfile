@@ -26,8 +26,8 @@ COPY . .
 RUN mix compile
 
 # Compile assets
-RUN cd assets && npm install && npm run deploy
-RUN mix phx.digest
+#RUN cd assets && npm install && npm run deploy
+#RUN mix phx.digest
 
 # Build the release
 RUN mix release
@@ -36,7 +36,7 @@ RUN mix release
 FROM alpine:latest AS app
 
 # Install runtime dependencies
-RUN apk add --no-cache bash openssl
+#RUN apk add --no-cache bash openssl
 
 # Set work directory
 WORKDIR /app
