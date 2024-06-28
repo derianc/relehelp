@@ -30,7 +30,7 @@ COPY . .
 #RUN mix phx.digest
 
 # Build the release
-RUN mix release
+#RUN mix release
 
 # Stage 2: Create the runtime image
 FROM alpine:latest AS app
