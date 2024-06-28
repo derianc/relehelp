@@ -1,4 +1,4 @@
-# Use the official Elixir image
+# Stage 1: Build the application
 FROM elixir:1.12.2-alpine AS build
 
 # Set environment variables
@@ -32,7 +32,7 @@ RUN mix phx.digest
 # Build the release
 RUN mix release
 
-# Start a new stage for the final image
+# Stage 2: Create the runtime image
 FROM alpine:latest AS app
 
 # Install runtime dependencies
