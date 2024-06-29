@@ -1,20 +1,27 @@
 # Stage 1: Build the application
-FROM elixir:1.12.2-alpine AS build
+FROM hexpm/elixir:1.13.0-erlang-24.1.5-alpine-3.14.2 AS build
 
 # Set environment variables
-ENV MIX_ENV=prod
+ENV MIX_ENV=prod \
+    LANG=C.UTF-8 \
+    REPLACE_OS_VARS=true
+
+# Install necessary build tools
+RUN apk update && apk add --no-cache \
+    build-base \
+    git \
+    npm \
+    nodejs \
+    bash
 
 # Install Hex + Rebar
 RUN mix local.hex --force && \
     mix local.rebar --force
 
-# Install Node.js (required for assets)
-RUN apk add --no-cache build-base npm git
-
 # Set build directory
 WORKDIR /app
 
-# Cache and install dependencies
+# Cache Elixir deps
 COPY mix.exs mix.lock ./
 RUN mix deps.get --only $MIX_ENV
 RUN mix deps.compile
@@ -22,21 +29,31 @@ RUN mix deps.compile
 # Copy the rest of the application code
 COPY . .
 
-# Compile the application
-#RUN mix compile
+# Build the application
+RUN mix compile
 
-# Compile assets
-#RUN cd assets && npm install && npm run deploy
-#RUN mix phx.digest
+# Install npm dependencies and build assets
+RUN cd assets && npm install && npm run deploy
+RUN mix phx.digest
 
 # Build the release
-#RUN mix release
+RUN mix release
 
-# Stage 2: Create the runtime image
-FROM alpine:latest AS app
+# Stage 2: Prepare the runtime image
+FROM alpine:3.14
 
 # Install runtime dependencies
-#RUN apk add --no-cache bash openssl
+RUN apk add --no-cache \
+    bash \
+    openssl \
+    ncurses-libs
+
+# Set environment variables
+ENV LANG=C.UTF-8 \
+    REPLACE_OS_VARS=true \
+    MIX_ENV=prod \
+    PORT=4000 \
+    HOME=/app
 
 # Set work directory
 WORKDIR /app
