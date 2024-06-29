@@ -30,7 +30,7 @@ RUN mix deps.compile
 COPY . .
 
 # Build the application
-RUN mix compile
+#RUN mix compile
 
 # Install npm dependencies and build assets
 RUN cd assets && npm install && npm run deploy
