@@ -1,6 +1,6 @@
 FROM elixir:latest
 
-RUN mix deps.get
+RUN mix compile
 
 COPY . /app
 
